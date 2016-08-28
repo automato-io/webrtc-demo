@@ -8,7 +8,7 @@ Issues: [dev@automato.io](mailto:dev@automato.io)
 
 ## Live demo
 
-[webrtc.automato.io](webrtc.automato.io)
+[webrtc.automato.io](http://webrtc.automato.io)
 
 ## Build and run
   
