@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebRTC technology demo</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="./components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./components/angular/angular.min.js"></script>
+    <script src="./components/webrtc-adapter/release/adapter.js"></script>
+    <script src="./js/app.js"></script>
+</head>
+<body ng-app="Application">
+<div class="container" ng-controller="MainController">
+    <div class="row">
+        <div class="col-md-12">
+            <img class="logo" src="./assets/logo.png" width="200" alt="WebRTC">
+            <hr>
+            <p class="lead">
+                Use this page to exercise <a href="https://webrtc.org/" title="Project homepage">WebRTC</a> - real-time communication between <a href="http://caniuse.com/#search=webrtc" title="List of supported browsers">browsers</a> without the need for additional applications or plug-ins.
+            </p>
+            <p ng-hide="onAir">
+                Select a topic from the list below on two computers (or essentially any two browsers) to start video communication. This version supports up to two peers connected to a topic.
+            </p>
+            <div class="alert alert-danger" role="alert" ng-show="error">
+                <strong>Yikes!</strong> {{error}}
+            </div>
+            <div ng-show="onAir">
+                <div class="video-wrapper thumbnail">
+                    <video id="local-video" autoplay></video>
+                </div>
+                <div class="video-wrapper thumbnail">
+                    <video id="remote-video" autoplay></video>
+                </div>
+                <div>
+                    <button class="btn btn-primary btn-md" ng-click="leave()">Leave {{room}}</button>
+                </div>
+            </div>
+            <div ng-hide="onAir">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <select type="text" class="form-control" ng-model="room" ng-options="r for r in rooms"></select>
+                    </div>
+                    <button class="btn btn-primary btn-md" ng-click="join()">Enter</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <hr>
+            <p>
+                <a href="mailto:dev@automato.io">Questions, Issues</a>
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
