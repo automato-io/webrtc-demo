@@ -81,6 +81,7 @@ WebRTC.prototype.initLocalMedia = function() {
         self.localStream = stream;
         self.localVideoElement = self.getLocalVideoElement();
         self.localVideoElement.srcObject = stream;
+        self.localVideoElement.muted = "muted";
     }
     function errorHandler(error) {
         console.log(error);
