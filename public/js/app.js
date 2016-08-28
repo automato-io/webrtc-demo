@@ -144,32 +144,30 @@ WebRTC.prototype.createPeerConnection = function(config, isInitiator) {
     };
     if (isInitiator) {
         try {
-            navigator.mediaDevices.getUserMedia(self.config.constraints)
-                .then(function(stream) {
-                    stream.getTracks().forEach(function(track) {
-                        self.peerConnection.addTrack(track, stream);
+            var interval = setInterval(function() {
+                if (self.localStream) {
+                    clearInterval(interval);
+                    self.localStream.getTracks().forEach(function(track) {
+                        self.peerConnection.addTrack(track, self.localStream);
                     });
-                })
-                .then(function() {
-                    return new Promise(function(resolve, reject) {
+                    var offerPromise = new Promise(function(resolve, reject) {
                         self.peerConnection.createOffer(resolve, reject, self.offerOptions);
                     });
-                })
-                .then(function(offer) {
-                    return new Promise(function(resolve, reject) {
-                        self.peerConnection.setLocalDescription(offer, resolve, reject);
+                    offerPromise.then(function(offer) {
+                        return new Promise(function(resolve, reject) {
+                            self.peerConnection.setLocalDescription(offer, resolve, reject);
+                        });
+                    }).then(function() {
+                        self.sendMessage({
+                            room: self.room,
+                            data: self.peerConnection.localDescription
+                        });
+                    }).catch(function(e) {
+                        console.log(e);
+                        throw new Error('Cannot create peer connection');
                     });
-                })
-                .then(function() {
-                    self.sendMessage({
-                        room: self.room,
-                        data: self.peerConnection.localDescription
-                    });
-                })
-                .catch(function(e) {
-                    console.log(e);
-                    throw new Error('Cannot create peer connection');
-                });
+                }
+            }, 200);
         } catch (e) {
             console.log(e);
             throw new Error('Cannot create peer connection');
@@ -181,13 +179,8 @@ WebRTC.prototype.handleOfferMessage = function(message) {
     var self = this;
     this.peerConnection.setRemoteDescription(new RTCSessionDescription(message))
         .then(function() {
-            return new Promise(function(resolve, reject) {
-                navigator.mediaDevices.getUserMedia(self.config.constraints).then(resolve).catch(reject);
-            });
-        })
-        .then(function(stream) {
-            stream.getTracks().forEach(function(track) {
-                self.peerConnection.addTrack(track, stream);
+            self.localStream.getTracks().forEach(function(track) {
+                self.peerConnection.addTrack(track, self.localStream);
             });
         })
         .then(function() {
